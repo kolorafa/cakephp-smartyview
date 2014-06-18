@@ -86,6 +86,8 @@ class SmartyView extends View
         if (preg_match('/\.ctp$/', $___viewFn)) { 
             return parent::_render($___viewFn, $___data_for_view);
         } 
+        $this->_current = $___viewFn;
+        
         if ($this->helpers != false)
 		{
             $this->loadHelpers();
@@ -141,6 +143,14 @@ class SmartyView extends View
         }
 
 		$res = $this->Smarty->fetch($___viewFn);
+		
+	if (isset($this->_parents[$___viewFn])) {
+            $this->_stack[] = $this->fetch('content');
+            $this->assign('content', $res);
+
+            $res = $this->_render($this->_parents[$___viewFn]);
+            $this->assign('content', array_pop($this->_stack));
+        }
         
         return $res;
 	}
